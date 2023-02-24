@@ -242,7 +242,7 @@ function set_remove_value(remove_tree_node) {
   });
 }
 
-function find_left_or_right_most_node(find_tree_node) {
+function find_left_or_right_most_node(find_l_r_tree_node) {
   document.querySelector(".submit").onclick = ((el) => {
     const val = document.querySelector(".node-key").value;
     const v = parseInt(val, 10);
