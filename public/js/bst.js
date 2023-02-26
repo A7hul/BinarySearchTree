@@ -169,6 +169,7 @@ class BinarySearchTree {
 }
 
 window.onload = () => {
+  
   const tree = new BinarySearchTree();
 
   const node_view = {}, node_map = {};
@@ -288,6 +289,20 @@ window.onload = () => {
 
       delete node_view[v];
       delete node_map[v_n_id];
+      // Make AJAX call to delete the node in the database
+      const token = document.head.querySelector('meta[name="csrf-token"]').content;
+      const data = { node_value: v, _token: token };
+      $.ajax({
+        url: '/destroy',
+        type: 'POST',
+        data: data,
+        success: function(response) {
+          // handle successful response if needed
+        },
+        error: function(xhr) {
+          // handle error if needed
+        }
+      });
     } else {
       message.innerHTML = 'Node ' + v + ' not found.';
 
@@ -320,13 +335,28 @@ window.onload = () => {
     const message = document.querySelector(".message");
     if (!tree.find(v)) {
       message.innerHTML = 'Added Node ' + v + '.';
+      
       const node = tree.insert(v);
-
       add_node(v, node);
 
       const result_m = traverse(tree.root);
       translate_obj(result_m.ps);
       max_depth = Math.max(max_depth, result_m.depth);
+    
+      // Make AJAX call to store the node in the database
+      const token = document.head.querySelector('meta[name="csrf-token"]').content;
+      const data = { node_value: v, _token: token };
+      $.ajax({
+        url: '/store',
+        type: 'POST',
+        data: data,
+        success: function(response) {
+          // handle successful response if needed
+        },
+        error: function(xhr) {
+          // handle error if needed
+        }
+      });
     } else {
       message.innerHTML = 'Try another Node ' + v + ' found.';
     }
@@ -383,4 +413,10 @@ window.onload = () => {
   set_remove_value(remove_tree_node);
   find_left_or_right_most_node(find_l_r_tree_node);
   find_node(find_tree_node);
+  
+  const db_nodes = document.getElementById('nodes').value;
+  for (const node of JSON.parse(db_nodes)) {
+    const node_value = node.node_value;
+    add_tree_node(node_value);
+  }
 };
